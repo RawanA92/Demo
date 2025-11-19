@@ -1,5 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import CharacterController from "./Utils/CharacterLoader";
 
 function Scene() {
   return (
@@ -13,11 +14,14 @@ function Scene() {
 
 export default function App() {
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
-      <Canvas>
-        <OrbitControls />
+    <>
+      <Canvas
+        style={{ width: "100vw", height: "100vh", backgroundColor: 'green' }}
+      >
+        <CharacterController/>
         <Scene />
+        <gridHelper args={[60, 60, 'blue', 'blue']}/>
       </Canvas>
-    </div>
+    </>
   );
 }
