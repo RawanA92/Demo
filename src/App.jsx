@@ -13,18 +13,20 @@ export default function App() {
         <Physics gravity={[0, -9.81, 0]}>
           {/* LIGHTS */}
           <directionalLight
-            castShadow
-            intensity={2.5}
-            position={[10, 25, 10]}
-            shadow-mapSize-width={4096}
-            shadow-mapSize-height={4096}
-            shadow-bias={-0.0001}
-            shadow-camera-far={50}
-            shadow-camera-left={-20}
-            shadow-camera-right={20}
-            shadow-camera-top={20}
-            shadow-camera-bottom={-20}
-          />
+  castShadow
+  intensity={2.5}
+  position={[50, 120, 50]}
+  shadow-mapSize-width={8192}  
+  shadow-mapSize-height={8192}
+  shadow-bias={-0.0005}       
+  shadow-normalBias={0.05}     
+  shadow-camera-far={500}
+  shadow-camera-left={-400}
+  shadow-camera-right={400}
+  shadow-camera-top={400}
+  shadow-camera-bottom={-400}
+/>
+
           <ambientLight intensity={0.4} />
           <pointLight position={[10, 10, 10]} intensity={0.5} />
           <pointLight position={[-10, 5, -10]} intensity={0.3} />
