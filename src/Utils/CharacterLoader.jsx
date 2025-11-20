@@ -2,8 +2,9 @@ import { useGLTF, useAnimations } from "@react-three/drei";
 import { useRef, useEffect, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { RigidBody } from "@react-three/rapier";
 
-export default function CharacterController() {
+export default function CharacterController(props) {
   const { scene, animations } = useGLTF("/character1.glb");
   const characterRef = useRef();
   const { actions, mixer } = useAnimations(animations, characterRef);
@@ -22,8 +23,8 @@ export default function CharacterController() {
   useEffect(() => {
     threeScene.add(cameraPivot.current);
     cameraPivot.current.add(camera);
-    camera.position.set(0, 2, -5);
-    camera.lookAt(new THREE.Vector3(0, 1, 0));
+    camera.position.set(0, 6, -10);
+    camera.lookAt(new THREE.Vector3(0, -10, 0));
   }, [camera, threeScene]);
 
   // --- keyboard ---
@@ -111,10 +112,10 @@ export default function CharacterController() {
 
     if (forward || backward) {
       if (ctrl) {
-        speed = 6; // double speed for running
+        speed = 16; // double speed for running
         actionName = "Run"; // use Run animation
       } else {
-        speed = 3;
+        speed = 6;
         actionName = "Walk"; // use Walk animation
       }
 
@@ -164,15 +165,36 @@ export default function CharacterController() {
 
     // --- move pivot to character ---
     cameraPivot.current.position.copy(characterRef.current.position);
+    // cameraPivot.current.position.y = cameraPivot.current.position.y
     cameraPivot.current.rotation.y = cameraRotationY.current;
   });
+
+    useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        
+        if (child.material) {
+          child.material.envMapIntensity = 1;
+          child.material.needsUpdate = true;
+        }
+      }
+    });
+  }, [scene]);
 
   // --- cleanup ---
   useEffect(() => () => mixer?.stopAllAction(), [mixer]);
 
   return (
-    <group ref={characterRef} scale={1} position={[0, 0, 0]}>
-      <primitive object={scene} />
-    </group>
+    <RigidBody type="kinematicPosition" colliders="trimesh">
+      {/* <group ref={characterRef} scale={3} position={[0, -14, 0]}> */}
+      {/* <mesh position={[0, 1, 0]}> */}
+        {/* <cylinderGeometry args={[0.35, 0.35]}/> */}
+        {/* <meshStandardMaterial/> */}
+      {/* </mesh> */}
+        <primitive ref={characterRef} object={scene} scale={3} position={[0, -14, 0]}/>
+      {/* </group> */}
+    </RigidBody>
   );
 }
