@@ -7,7 +7,7 @@ import { RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
 import { CameraController, CameraController1 } from "./CameraController";
 import { useThree } from "@react-three/fiber";
-export function CharacterController() {
+export function CharacterController({ scaleR }) {
   const [cameraHigh, setCameraHigh] = useState(25);
 
   // Load character + animations
@@ -100,9 +100,6 @@ export function CharacterController() {
   });
 
   // Leva slider for camera height
-  const { scaleR } = useControls({
-    scaleR: { value: 25, min: 18, max: 48.87, step: 0.01 },
-  });
   useEffect(() => setCameraHigh(scaleR), [scaleR]);
 
   // Cleanup
@@ -137,7 +134,7 @@ export function CharacterController() {
   );
 }
 
-export function CharacterController1() {
+export function CharacterController1({ scaleR }) {
   const [cameraHigh, setCameraHigh] = useState(25);
   const [currentActionName, setCurrentActionName] = useState("Idle"); // <-- track animation name in state
 
@@ -243,10 +240,6 @@ export function CharacterController1() {
     }
   });
 
-  // Leva slider for camera height
-  const { scaleR } = useControls({
-    scaleR: { value: 25, min: 18, max: 48.87, step: 0.01 },
-  });
   useEffect(() => setCameraHigh(scaleR), [scaleR]);
 
   // Cleanup
@@ -280,9 +273,31 @@ export function CharacterController1() {
       <CameraController1
         targetRef={characterRef}
         isWalking={currentActionName === "Walk" || currentActionName === "Run"}
-        // you can also pass currentActionName if you want to scale bobbing intensity
         actionName={currentActionName}
       />
+    </>
+  );
+}
+export function Character() {
+  const { scaleR, mode } = useControls({
+    scaleR: {
+      value: 25,
+      min: 18,
+      max: 48.87,
+      step: 0.01,
+      label: "Scale Range",
+    },
+    mode: {
+      value: "Third-Prespective",
+      options: ["First-Prespective", "Third-Prespective"],
+      label: "Camera Mode",
+    },
+  });
+
+  return (
+    <>
+      {mode === "First-Prespective" && <CharacterController1 scaleR={scaleR} />}
+      {mode === "Third-Prespective" && <CharacterController scaleR={scaleR} />}
     </>
   );
 }

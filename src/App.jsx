@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import { Physics, RigidBody } from "@react-three/rapier";
 import City from "./City";
-import { CharacterController, CharacterController1 } from "./Utils/CharacterLoader";
+import { Character, CharacterController, CharacterController1 } from "./Utils/CharacterLoader";
 import Sky360 from "./Utils/ImageLoader";
 import { useEffect, useState } from "react";
 import { Joystick } from "react-joystick-component";
@@ -45,10 +45,7 @@ export default function App() {
         <ambientLight intensity={3} />
         <Physics gravity={[0, -9.81, 0]}>
           <RigidBody type="kinematicPosition" colliders="trimesh">
-            <CharacterController1
-              onJoystickMove={handleJoystickMove}
-              onJoystickStop={handleJoystickStop}
-            />
+            <Character/>
           </RigidBody>
           <RigidBody type="fixed" colliders="trimesh">
             <City position={[4, 0.57, 0]} scale={[30, 30, 30]} />
