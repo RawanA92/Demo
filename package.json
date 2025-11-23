@@ -13,8 +13,12 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.0",
     "@react-three/rapier": "^2.2.0",
+    "@theatre/core": "^0.7.2",
+    "@theatre/studio": "^0.7.2",
+    "leva": "^0.10.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-joystick-component": "^6.2.1",
     "three": "^0.181.2"
   },
   "devDependencies": {
