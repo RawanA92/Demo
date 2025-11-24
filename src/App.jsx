@@ -7,13 +7,15 @@ import {
   CharacterController,
   CharacterController1,
 } from "./Utils/CharacterLoader";
+import { PerformanceMonitor } from "@react-three/drei";
 import Sky360 from "./Utils/ImageLoader";
 import { useEffect, useState } from "react";
+
 import { Joystick } from "react-joystick-component";
 
 export default function App() {
   // const [deviceType, setDeviceType] = useState("keyboard");
-
+  const [shadowSize, setShadowSize] = useState(2048);
   const handleJoystickMove = (keys) => {
     // You can pass keys down or handle globally
     console.log("Joystick keys:", keys);
@@ -27,9 +29,14 @@ export default function App() {
     <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas
         shadows
-        camera={{ near: 0.1, far: 100000, position: [20, 15, 20], fov: 45  }}
-        gl={{ logarithmicDepthBuffer: true }}
+        camera={{ near: 0.1, far: 18000, position: [20, 15, 20], fov: 45  }}
+        gl={{ powerPreference: "low-power", precision: "lowp" }}
+        frameloop="demand"
       >
+      {/* <PerformanceMonitor
+        onDecline={() => setShadowSize(1024)} // lower quality
+        onIncline={() => setShadowSize(4096)} // raise quality
+      /> */}
         <Environment preset="sunset" />
         <directionalLight
           castShadow
