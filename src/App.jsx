@@ -29,14 +29,10 @@ export default function App() {
     <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas
         shadows
-        camera={{ near: 0.1, far: 18000, position: [20, 15, 20], fov: 45  }}
-        gl={{ powerPreference: "low-power", precision: "lowp" }}
+        camera={{ near: 0.1, far: 18000, position: [20, 15, 20], fov: 45 }}
         frameloop="demand"
+        // gl={{ logarithmicDepthBuffer: true }}
       >
-      {/* <PerformanceMonitor
-        onDecline={() => setShadowSize(1024)} // lower quality
-        onIncline={() => setShadowSize(4096)} // raise quality
-      /> */}
         <Environment preset="sunset" />
         <directionalLight
           castShadow
