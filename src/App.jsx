@@ -2,7 +2,11 @@ import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { Physics, RigidBody } from "@react-three/rapier";
 import City from "./City";
-import { Character, CharacterController, CharacterController1 } from "./Utils/CharacterLoader";
+import {
+  Character,
+  CharacterController,
+  CharacterController1,
+} from "./Utils/CharacterLoader";
 import Sky360 from "./Utils/ImageLoader";
 import { useEffect, useState } from "react";
 import { Joystick } from "react-joystick-component";
@@ -21,7 +25,11 @@ export default function App() {
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      <Canvas shadows camera={{ position: [20, 15, 20], fov: 45 }}>
+      <Canvas
+        shadows
+        camera={{ near: 0.1, far: 100000, position: [20, 15, 20], fov: 45  }}
+        // gl={{ logarithmicDepthBuffer: true }}
+      >
         <Environment preset="sunset" />
         <directionalLight
           castShadow
@@ -46,10 +54,10 @@ export default function App() {
         <Physics gravity={[0, -9.81, 0]}>
           <RigidBody type="kinematicPosition" colliders="trimesh">
             {/* <Character/> */}
-            <OrbitControls/>
+            <OrbitControls />
           </RigidBody>
           <RigidBody type="fixed" colliders="trimesh">
-            <City position={[4, 0.57, 0]} scale={[3, 3, 3]} />
+            <City position={[4, 0.57, 0]} scale={[30, 30, 30]} />
           </RigidBody>
         </Physics>
         {/* <Sky360 /> */}
