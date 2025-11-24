@@ -28,7 +28,7 @@ export default function App() {
       <Canvas
         shadows
         camera={{ near: 0.1, far: 100000, position: [20, 15, 20], fov: 45  }}
-        // gl={{ logarithmicDepthBuffer: true }}
+        gl={{ logarithmicDepthBuffer: true }}
       >
         <Environment preset="sunset" />
         <directionalLight
