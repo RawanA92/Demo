@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
+import { Environment, OrbitControls } from "@react-three/drei";
 import { Physics, RigidBody } from "@react-three/rapier";
 import City from "./City";
 import { Character, CharacterController, CharacterController1 } from "./Utils/CharacterLoader";
@@ -45,13 +45,14 @@ export default function App() {
         <ambientLight intensity={3} />
         <Physics gravity={[0, -9.81, 0]}>
           <RigidBody type="kinematicPosition" colliders="trimesh">
-            <Character/>
+            {/* <Character/> */}
+            <OrbitControls/>
           </RigidBody>
           <RigidBody type="fixed" colliders="trimesh">
-            <City position={[4, 0.57, 0]} scale={[30, 30, 30]} />
+            <City position={[4, 0.57, 0]} scale={[3, 3, 3]} />
           </RigidBody>
         </Physics>
-        <Sky360 />
+        {/* <Sky360 /> */}
       </Canvas>
       {/* Joystick overlay outside Canvas */}
       {/* {deviceType === "touch" && ( */}
