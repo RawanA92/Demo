@@ -314,6 +314,63 @@ Click on any object to see its coordinates          </div>
           decay={0.5}
         />
         <pointLight 
+          position={[43.32, 6.35, -271.76]} //  al_faisaliyah_center_riyadh
+          intensity={4.0} 
+          color="#f4f4f1ff"
+          distance={100}
+          decay={0.5}
+        />
+        <pointLight 
+          position={[43.32, 6.35, -244.60]} //  al_faisaliyah_center_riyadh
+          intensity={4.0} 
+          color="#f4f4f1ff"
+          distance={100}
+          decay={0.5}
+        />
+          <pointLight 
+          position={[43.32, 6.35, -222.50]} //  al_faisaliyah_center_riyadh
+          intensity={4.0} 
+          color="#f4f4f1ff"
+          distance={100}
+          decay={0.5}
+        />
+        <pointLight 
+          position={[43.32, 6.35, -183.69]} //  al_faisaliyah_center_riyadh
+          intensity={4.0} 
+          color="#f4f4f1ff"
+          distance={100}
+          decay={0.5}
+        />
+        <pointLight 
+          position={[43.32, 6.35, -159.89]} //  al_faisaliyah_center_riyadh
+          intensity={4.0} 
+          color="#f4f4f1ff"
+          distance={100}
+          decay={0.5}
+        />
+        <pointLight 
+          position={[-0.65, -12.48, -163.08]} //  al_faisaliyah_center_riyadh
+          intensity={4.0} 
+          color="#f4f4f1ff"
+          distance={100}
+          decay={0.5}
+        />
+        <pointLight 
+          position={[-0.65, -12.48, -195.57]} //  al_faisaliyah_center_riyadh
+          intensity={4.0} 
+          color="#f4f4f1ff"
+          distance={100}
+          decay={0.5}
+        />
+        <pointLight 
+          position={[-33.38, -12.48, -269.94]} //  al_faisaliyah_center_riyadh
+          intensity={4.0} 
+          color="#f4f4f1ff"
+          distance={100}
+          decay={0.5}
+        />
+
+        <pointLight 
           position={[-112.76, 11.20, -21.07]} //  albaik_restaurant
           intensity={4.0} 
           color="#FFFFFF"
@@ -636,20 +693,20 @@ Click on any object to see its coordinates          </div>
           decay={0.5}
         />
 
-        <pointLight 
+        {/* <pointLight 
           position={[-60, 10, -40]} //  bicycle_parking
           intensity={0.8} 
           color="#FFFFFF"
           distance={15}
           decay={2}
-        />
-        <pointLight 
+        /> */}
+        {/* <pointLight 
           position={[-40, 12, -40]} //  billboard
           intensity={1.0} 
           color="#FF6B6B"
           distance={18}
           decay={1.5}
-        />
+        /> */}
         <pointLight 
           position={[-60, 8, -100]} //  gas-station2
           intensity={1.2} 
@@ -657,27 +714,7 @@ Click on any object to see its coordinates          </div>
           distance={20}
           decay={1.5}
         />
-        {/* <pointLight 
-          position={[-30, 80, 105]} //  saudi__tower
-          intensity={2.5} 
-          color="#87CEEB"
-          distance={40}
-          decay={1.2}
-        />
-        <pointLight 
-          position={[-38, 25, 45]} //  modern_building_002
-          intensity={1.3} 
-          color="#FFFFFF"
-          distance={22}
-          decay={1.5}
-        />
-        <pointLight 
-          position={[70, 50, 120]} //  skyscraper
-          intensity={1.4} 
-          color="#E6F3FF"
-          distance={28}
-          decay={1.5}
-        /> */}
+        
         <pointLight 
           position={[45.19, 81.90, 111.12]} //  skyscraper_tower
           intensity={5.3} 
@@ -710,7 +747,7 @@ Click on any object to see its coordinates          </div>
         )}
 
         <Physics gravity={[0, -9.81, 0]}>
-          {/* {useDeviceType() === "touch" ? <CharacterJoystick/> : <Character/>} */}
+          {useDeviceType() === "touch" ? <CharacterJoystick/> : <Character/>}
           {/* <JoystickCharacter joystickVector={joystickVector}/> */}
           <OrbitControls />
           <City 
