@@ -4,25 +4,15 @@ import { Physics, RigidBody } from "@react-three/rapier";
 import City from "./City";
 import { Character } from "./Utils/CharacterLoader";
 import { useDeviceType } from "./Utils/DeviceType";
-import { CharacterJoystick } from "./Utils/Joystick";
-import JoystickCharacter from "./Utils/JoystickLoader";
 import { useState } from "react";
-import { Joystick } from "react-joystick-component";
+import JoystickCharacterController from "./Utils/Joystick/JoystickCharacterController";
+import MobileJoystick from "./Utils/Joystick/MobileJoystick";
 
 export default function App() {
-  const [joystickVector, setJoystickVector] = useState({ x: 0, y: 0 });
   const [isDay, setIsDay] = useState(true);
   const [selectedPosition, setSelectedPosition] = useState([0, 0, 0]);
   const [showCoordinates, setShowCoordinates] = useState(true);
   const [clickedObject, setClickedObject] = useState(null);
-
-  const handleMove = (event) => {
-    setJoystickVector({ x: event.x, y: event.y });
-  };
-
-  const handleStop = () => {
-    setJoystickVector({ x: 0, y: 0 });
-  };
 
   const toggleDayNight = () => {
     setIsDay(!isDay);
@@ -709,9 +699,7 @@ Click on any object to see its coordinates          </div>
           </>
         )}
 
-        <Physics gravity={[0, -9.81, 0]}>
-          {/* {useDeviceType() === "touch" ? <CharacterJoystick/> : <Character/>} */}
-          {/* <JoystickCharacter joystickVector={joystickVector}/> */}
+        <Physics>
           <OrbitControls />
           <City 
             position={[4, -12.8, 0]} 
@@ -721,8 +709,10 @@ Click on any object to see its coordinates          </div>
               setClickedObject(objectName);
             }}
           />
+          {useDeviceType() === "touch" ? <JoystickCharacterController/> : <Character/>}
         </Physics>
       </Canvas>
+      {useDeviceType() && <MobileJoystick/>}
       {/* )} */}
     </div>
   );

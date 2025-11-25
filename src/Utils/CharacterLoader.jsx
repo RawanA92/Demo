@@ -297,7 +297,7 @@ export function Character() {
 
   return (
     <>
-      {mode === "First-Prespective" && <CharacterController1 scaleR={scaleR} />}
+      {mode === "First-Prespective" && <CharacterController1 scaleR={scaleR} joystick={joystick}/>}
       {mode === "Third-Prespective" && <CharacterController scaleR={scaleR} />}
       {mode === "Cinematic View" && <SquareDroneCamera/>}
     </>
