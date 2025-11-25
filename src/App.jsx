@@ -24,7 +24,7 @@ export default function App() {
     <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas
         shadows
-        camera={{ near: 0.1, far: 200, position: [20, 15, 20], fov: 45 }}
+        camera={{ near: 0.1, far: 1000, position: [20, 15, 20], fov: 45 }}
         // gl={{ logarithmicDepthBuffer: true }}
       >
         <Environment preset="sunset" />
