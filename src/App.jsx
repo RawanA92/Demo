@@ -4,18 +4,12 @@ import { Physics, RigidBody } from "@react-three/rapier";
 import City from "./City";
 import {
   Character,
-  CharacterController,
-  CharacterController1,
 } from "./Utils/CharacterLoader";
-import { PerformanceMonitor } from "@react-three/drei";
-import Sky360 from "./Utils/ImageLoader";
-import { useEffect, useState } from "react";
-
 import { Joystick } from "react-joystick-component";
+import SquareDroneCamera from "./Utils/CameraDroneView";
 
 export default function App() {
   // const [deviceType, setDeviceType] = useState("keyboard");
-  const [shadowSize, setShadowSize] = useState(2048);
   const handleJoystickMove = (keys) => {
     // You can pass keys down or handle globally
     console.log("Joystick keys:", keys);
@@ -30,7 +24,6 @@ export default function App() {
       <Canvas
         shadows
         camera={{ near: 0.1, far: 18000, position: [20, 15, 20], fov: 45 }}
-        frameloop="demand"
         // gl={{ logarithmicDepthBuffer: true }}
       >
         <Environment preset="sunset" />
@@ -55,13 +48,13 @@ export default function App() {
         {/* <directionalLight intensity={3}/> */}
         <ambientLight intensity={3} />
         <Physics gravity={[0, -9.81, 0]}>
-          <RigidBody type="kinematicPosition" colliders="trimesh">
-            {/* <Character/> */}
+          {/* <RigidBody type="kinematicPosition" colliders="trimesh"> */}
+            <Character/>
             <OrbitControls />
-          </RigidBody>
-          <RigidBody type="fixed" colliders="trimesh">
+          {/* </RigidBody> */}
+          {/* <RigidBody type="fixed" colliders="trimesh"> */}
             <City position={[4, 0.57, 0]} scale={[30, 30, 30]} />
-          </RigidBody>
+          {/* </RigidBody> */}
         </Physics>
         {/* <Sky360 /> */}
       </Canvas>

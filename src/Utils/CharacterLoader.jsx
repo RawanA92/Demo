@@ -7,6 +7,7 @@ import { RigidBody } from "@react-three/rapier";
 import { useControls } from "leva";
 import { CameraController, CameraController1 } from "./CameraController";
 import { useThree } from "@react-three/fiber";
+import SquareDroneCamera from "./CameraDroneView";
 export function CharacterController({ scaleR }) {
   const [cameraHigh, setCameraHigh] = useState(25);
 
@@ -288,8 +289,8 @@ export function Character() {
       label: "Scale Range",
     },
     mode: {
-      value: "Third-Prespective",
-      options: ["First-Prespective", "Third-Prespective"],
+      value: "Cinematic View",
+      options: ["First-Prespective", "Third-Prespective", "Cinematic View"],
       label: "Camera Mode",
     },
   });
@@ -298,6 +299,7 @@ export function Character() {
     <>
       {mode === "First-Prespective" && <CharacterController1 scaleR={scaleR} />}
       {mode === "Third-Prespective" && <CharacterController scaleR={scaleR} />}
+      {mode === "Cinematic View" && <SquareDroneCamera/>}
     </>
   );
 }
