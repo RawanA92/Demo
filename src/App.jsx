@@ -18,6 +18,7 @@ export default function App() {
 
   const [scaleR, setScaleR] = useState(25);
   const [mode, setMode] = useState("Cinematic View");
+  const [showControls, setShowControls] = useState(true);
 
   const [moveInput, setMoveInput] = useState({ x: 0, y: 0 });
   const [lookInput, setLookInput] = useState({ x: 0, y: 0 });
@@ -83,13 +84,13 @@ export default function App() {
         {isDay ? "🌙 " : "☀️"}
       </button>
 
-      {showCoordinates && (
+      {/* {showCoordinates && (
         <CoordinatesDisplay
           selectedPosition={selectedPosition}
           clickedObject={clickedObject}
           isDay={isDay}
         />
-      )}
+      )} */}
 
       <Canvas
         shadows
@@ -137,11 +138,14 @@ export default function App() {
       {useDeviceType() === "touch" && (
         <JoystickGUI onMoveChange={setMoveInput} onLookChange={setLookInput} />
       )}
+      
       <CustomControls
         scaleR={scaleR}
         mode={mode}
         onScaleChange={setScaleR}
         onModeChange={setMode}
+        showControls={showControls}
+        onToggle={() => setShowControls(!showControls)}
       />
     </div>
   );
@@ -355,16 +359,6 @@ const NightLighting = memo(({ selectedPosition }) => {
         environmentIntensity={0.3}
       />
 
-      {/* <gridHelper
-        args={[1000, 100, "#00ff00", "#005500"]}
-        position={[0, -1, 0]}
-        rotation={[0, 0, 0]}
-      /> */}
-
-      {/* <axesHelper args={[200]} /> */}
-
-      {/* <Cursor position={selectedPosition} /> */}
-
       <directionalLight
         castShadow
         intensity={0.8}
@@ -502,7 +496,43 @@ const Cursor = memo(({ position }) => (
   </group>
 ));
 
-function CustomControls({ scaleR, mode, onScaleChange, onModeChange }) {
+function CustomControls({ scaleR, mode, onScaleChange, onModeChange, showControls, onToggle }) {
+  // Show small button when controls are hidden
+  if (!showControls) {
+    return (
+      <button
+        onClick={onToggle}
+        style={{
+          position: "fixed",
+          top: "10px",
+          left: "10px",
+          zIndex: 1001,
+          padding: "12px",
+          fontSize: "20px",
+          backgroundColor: "rgba(0, 0, 0, 0.85)",
+          color: "#00ff88",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "8px",
+          cursor: "pointer",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+          transition: "all 0.3s ease",
+          fontFamily: "system-ui, sans-serif",
+          backdropFilter: "blur(10px)",
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.transform = "scale(1.05)";
+          e.target.style.boxShadow = "0 6px 16px rgba(0,0,0,0.5)";
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.transform = "scale(1)";
+          e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.4)";
+        }}
+      >
+        🎮
+      </button>
+    );
+  }
+
   return (
     <div
       style={{
@@ -523,16 +553,40 @@ function CustomControls({ scaleR, mode, onScaleChange, onModeChange }) {
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      <h3
-        style={{
-          margin: "0 0 20px 0",
-          fontSize: "16px",
-          color: "#00ff88",
-          fontWeight: "600",
-        }}
-      >
-        🎮 Controls
-      </h3>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <h3
+          style={{
+            margin: "0",
+            fontSize: "16px",
+            color: "#00ff88",
+            fontWeight: "600",
+          }}
+        >
+          🎮 Controls
+        </h3>
+        <button
+          onClick={onToggle}
+          style={{
+            background: "rgba(255, 255, 255, 0.1)",
+            color: "#00ff88",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            borderRadius: "4px",
+            padding: "4px 8px",
+            cursor: "pointer",
+            fontSize: "12px",
+            fontWeight: "500",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = "rgba(255, 255, 255, 0.2)";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = "rgba(255, 255, 255, 0.1)";
+          }}
+        >
+          Hide
+        </button>
+      </div>
 
       <div style={{ marginBottom: "25px" }}>
         <label
