@@ -13,84 +13,84 @@ export default function City(props) {
       position: [100, -1, -120],
       rotation: [0, Math.PI / 2, 0],
       scale: [0.8, 0.8, 0.8],
-      name: "Address Mall"
+      name: "Address Mall",
     },
     {
       file: useGLTF("/skyscraper (1).glb"),
       position: [130, -1, -60],
       rotation: [0, Math.PI / 2, 0],
       scale: [0.9, 1.2, 0.9],
-      name: "Skyscraper 1"
+      name: "Skyscraper 1",
     },
     {
       file: useGLTF("/al_faisaliyah_center_riyadh.glb"),
       position: [0, -1.3, -184],
       rotation: [0, 0, 0],
       scale: [0.008, 0.015, 0.008],
-      name: "Al Faisaliyah Center"
+      name: "Al Faisaliyah Center",
     },
     {
       file: useGLTF("/albaik_restaurant.glb"),
       position: [-100, -1.1, -40],
       rotation: [0, -Math.PI / 2, 0],
       scale: [6, 6, 6],
-      name: "Albaik Restaurant"
+      name: "Albaik Restaurant",
     },
     {
       file: useGLTF("/bicycle_parking.glb"),
       position: [-60, -1.1, -40],
       rotation: [0, -Math.PI / 2, 0],
       scale: [7, 3.5, 3.5],
-      name: "Bicycle Parking"
+      name: "Bicycle Parking",
     },
     {
       file: useGLTF("/metal_billboard_advertising_single_sided_free.glb"),
       position: [-40, -1.1, -40],
       rotation: [0, -Math.PI / 3, 0],
       scale: [4, 4, 4],
-      name: "Billboard"
+      name: "Billboard",
     },
     {
       file: useGLTF("/gas-station2.glb"),
       position: [-50, -1.1, -98],
       rotation: [0, Math.PI / 2, 0],
       scale: [1.29, 3.5, 1.69],
-      name: "Gas Station"
+      name: "Gas Station",
     },
     {
       file: useGLTF("/ferrari.glb"),
       position: [-60, -0.9, -105],
       rotation: [0, Math.PI / 2, 0],
       scale: [1, 1, 1],
-      name: "Ferrari Car"
+      name: "Ferrari Car",
     },
     {
       file: useGLTF("/saudi__tower.glb"),
       position: [-30, 48.5, 105],
       rotation: [0, Math.PI / 2, 0],
       scale: [19, 19, 19],
-      name: "Saudi Tower"
+      name: "Saudi Tower",
     },
     {
       file: useGLTF("/modern_building_002.glb"),
       position: [-38, -1.3, 45],
-      rotation: [0, Math.PI / 2 , 0],
+      rotation: [0, Math.PI / 2, 0],
       scale: [0.3, 0.7, 0.3],
-      name: "Modern Building"
+      name: "Modern Building",
     },
     {
       file: useGLTF("/skyscraper.glb"),
       position: [70, -2.5, 120],
       rotation: [0, Math.PI / 2, 0],
       scale: [0.9, 0.9, 0.9],
-      name: "Skyscraper"
+      name: "Skyscraper",
     },
     {
       file: useGLTF("/skyscraper_tower.glb"),
       position: [40, -2.5, 45],
       rotation: [0, Math.PI / 2, 0],
       scale: [0.85, 2.85, 0.85],
-      name: "Skyscraper Tower"
+      name: "Skyscraper Tower",
     },
   ];
 
@@ -100,32 +100,34 @@ export default function City(props) {
         if (child.isMesh) {
           child.castShadow = true;
           child.receiveShadow = true;
-          
-          child.addEventListener('click', (event) => {
+
+          child.addEventListener("click", (event) => {
             event.stopPropagation();
             const worldPosition = child.getWorldPosition(new THREE.Vector3());
             console.log(`النقر على: ${modelName}`, worldPosition);
-            
+
             if (onObjectClick) {
-              onObjectClick([worldPosition.x, worldPosition.y, worldPosition.z], modelName);
+              onObjectClick(
+                [worldPosition.x, worldPosition.y, worldPosition.z],
+                modelName
+              );
             }
           });
-          
-          child.cursor = 'pointer';
+
+          child.cursor = "pointer";
         }
       });
     };
 
     applyShadowsAndClick(city, "City Base");
     models.forEach((m) => applyShadowsAndClick(m.file, m.name));
-
   }, [city, models, onObjectClick]);
 
   const handleCityClick = (event) => {
     event.stopPropagation();
     const point = event.point;
-    console.log('click', point);
-    
+    console.log("click", point);
+
     if (onObjectClick) {
       onObjectClick([point.x, point.y, point.z], "City Ground");
     }
@@ -135,7 +137,7 @@ export default function City(props) {
     event.stopPropagation();
     const point = event.point;
     console.log(`click ${modelName}:`, point);
-    
+
     if (onObjectClick) {
       onObjectClick([point.x, point.y, point.z], modelName);
     }
@@ -143,14 +145,13 @@ export default function City(props) {
 
   return (
     <group {...otherProps}>
-      <primitive 
-        object={city.scene} 
-        scale={3} 
-        castShadow 
-        receiveShadow 
+      <primitive
+        object={city.scene}
+        scale={3}
+        castShadow
+        receiveShadow
         onClick={handleCityClick}
       />
-
       {models.map((m, i) => (
         <primitive
           key={i}
@@ -163,15 +164,60 @@ export default function City(props) {
           onClick={(event) => handleModelClick(event, m.name)}
         />
       ))}
-      <AdvertisingPlane rotation={[0, Math.PI / 6, 0]} position={[-39.1, 38.4, -38]} args={[43.4, 13.5]}/>
-      <AdvertisingPlane rotation={[0, 0, 0]} position={[102.7, 148.4, -36.1]} args={[35, 173.5]}/>
-      <AdvertisingPlane rotation={[0, Math.PI / 2, 0]} position={[126.2, 148.4, -60]} args={[35, 173.5]}/>
-      <AdvertisingPlane rotation={[0, Math.PI, 0]} position={[102.2, 148.4, -83.9]} args={[35, 173.5]}/>
-      <AdvertisingPlane rotation={[0, -Math.PI / 2, 0]} position={[78.5, 148.4, -59.9]} args={[35, 173.5]}/>
-      <AdvertisingPlane rotation={[-Math.PI / 90, Math.PI / 4, 0]} position={[11.5, 55, -252.5]} args={[25, 60.5]}/>      <AdvertisingPlane rotation={[0, Math.PI / 2, 0]} position={[-27, 55, 105]} args={[35, 60.5]}/>
-      <AdvertisingPlane rotation={[-Math.PI / 90, -Math.PI / 4, 0]} position={[-11.5, 55, -252.5]} args={[25, 60.5]}/>      <AdvertisingPlane rotation={[0, Math.PI / 2, 0]} position={[-27, 55, 105]} args={[35, 60.5]}/>
-
-    
+      <AdvertisingPlane
+        rotation={[0, Math.PI / 6, 0]}
+        position={[-39.1, 38.4, -38]}
+        args={[43.4, 13.5]}
+        advertisementImage={"Advertise1.jpg"}
+      />
+      <AdvertisingPlane
+        rotation={[0, 0, 0]}
+        position={[102.7, 148.4, -36.1]}
+        args={[35, 173.5]}
+        advertisementImage={"Advertise2.jpg"}
+      />
+      <AdvertisingPlane
+        rotation={[0, Math.PI / 2, 0]}
+        position={[126.2, 148.4, -60]}
+        args={[35, 173.5]}
+        advertisementImage={"Advertise3.jpg"}
+      />
+      <AdvertisingPlane
+        rotation={[0, Math.PI, 0]}
+        position={[102.2, 148.4, -83.9]}
+        args={[35, 173.5]}
+        advertisementImage={"Advertise1.jpg"}
+      />
+      <AdvertisingPlane
+        rotation={[0, -Math.PI / 2, 0]}
+        position={[78.5, 148.4, -59.9]}
+        args={[35, 173.5]}
+        advertisementImage={"Advertise2.jpg"}
+      />
+      <AdvertisingPlane
+        rotation={[-Math.PI / 90, Math.PI / 4, 0]}
+        position={[11.5, 55, -252.5]}
+        args={[25, 60.5]}
+        advertisementImage={"Advertise2.jpg"}
+      />{" "}
+      <AdvertisingPlane
+        rotation={[0, Math.PI / 2, 0]}
+        position={[-27, 55, 105]}
+        args={[35, 60.5]}
+        advertisementImage={'Advertise1.jpg'}
+      />
+      <AdvertisingPlane
+        rotation={[-Math.PI / 90, -Math.PI / 4, 0]}
+        position={[-11.5, 55, -252.5]}
+        args={[25, 60.5]}
+        advertisementImage={"Advertise2.jpg"}
+      />{" "}
+      <AdvertisingPlane
+        rotation={[0, Math.PI / 2, 0]}
+        position={[-27, 55, 105]}
+        args={[35, 60.5]}
+        advertisementImage={'Advertise2.jpg'}
+      />
     </group>
   );
 }
