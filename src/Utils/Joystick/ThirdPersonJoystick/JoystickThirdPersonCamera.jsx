@@ -22,7 +22,7 @@ export default function JoystickThirdPersonCamera({
 
     // Clamp pitch to prevent camera flipping
     targetPitchRef.current = Math.max(
-      -0.5,
+      -0.2,
       Math.min(1.2, targetPitchRef.current)
     );
 
