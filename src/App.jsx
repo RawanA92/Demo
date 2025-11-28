@@ -12,7 +12,6 @@ import CharacterSetup from "./Utils/Setup";
 export default function App() {
   const [isDay, setIsDay] = useState(true);
   const [selectedPosition, setSelectedPosition] = useState([0, 0, 0]);
-  const [showCoordinates, setShowCoordinates] = useState(true);
   const [clickedObject, setClickedObject] = useState(null);
   const [animationState, setAnimationState] = useState("Idle");
 
@@ -83,14 +82,6 @@ export default function App() {
         {isDay ? "🌙 " : "☀️"}
       </button>
 
-      {showCoordinates && (
-        <CoordinatesDisplay
-          selectedPosition={selectedPosition}
-          clickedObject={clickedObject}
-          isDay={isDay}
-        />
-      )}
-
       <Canvas
         shadows
         camera={{ near: 0.1, far: 1000, position: [20, 15, 20], fov: 45 }}
@@ -146,70 +137,6 @@ export default function App() {
     </div>
   );
 }
-
-// OPTIMIZED: Memoized coordinates display
-const CoordinatesDisplay = memo(({ selectedPosition, clickedObject, isDay }) => (
-  <div
-    style={{
-      position: "absolute",
-      top: "10px",
-      left: "10px",
-      background: isDay ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.8)",
-      color: isDay ? "#333" : "white",
-      padding: "15px",
-      borderRadius: "8px",
-      zIndex: 1000,
-      fontFamily: "monospace",
-      border: isDay ? "2px solid #2c3e50" : "2px solid #00ff00",
-      minWidth: "250px",
-      transition: "all 0.3s ease",
-    }}
-  >
-    <h3
-      style={{
-        margin: "0 0 10px 0",
-        color: isDay ? "#2c3e50" : "#00ff00",
-      }}
-    >
-      Coordinates{" "}
-    </h3>
-    <div style={{ marginBottom: "5px" }}>
-      <strong>X:</strong> {selectedPosition[0].toFixed(2)}
-    </div>
-    <div style={{ marginBottom: "5px" }}>
-      <strong>Y:</strong> {selectedPosition[1].toFixed(2)}
-    </div>
-    <div style={{ marginBottom: "10px" }}>
-      <strong>Z:</strong> {selectedPosition[2].toFixed(2)}
-    </div>
-    {clickedObject && (
-      <div
-        style={{
-          marginTop: "10px",
-          padding: "8px",
-          background: isDay
-            ? "rgba(44, 62, 80, 0.1)"
-            : "rgba(0, 255, 0, 0.1)",
-          borderRadius: "4px",
-          fontSize: "12px",
-          border: isDay ? "1px solid #2c3e50" : "1px solid #00ff00",
-        }}
-      >
-        <strong>The specific:</strong> {clickedObject}
-      </div>
-    )}
-    <div
-      style={{
-        marginTop: "10px",
-        fontSize: "11px",
-        color: isDay ? "#666" : "#ccc",
-        fontStyle: "italic",
-      }}
-    >
-      Click on any object to see its coordinates{" "}
-    </div>
-  </div>
-));
 
 // OPTIMIZED: Day lighting with reduced shadows and consolidated lights
 const DayLighting = memo(() => (
@@ -354,16 +281,6 @@ const NightLighting = memo(({ selectedPosition }) => {
         background={true}
         environmentIntensity={0.3}
       />
-
-      {/* <gridHelper
-        args={[1000, 100, "#00ff00", "#005500"]}
-        position={[0, -1, 0]}
-        rotation={[0, 0, 0]}
-      /> */}
-
-      {/* <axesHelper args={[200]} /> */}
-
-      {/* <Cursor position={selectedPosition} /> */}
 
       <directionalLight
         castShadow
