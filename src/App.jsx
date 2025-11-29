@@ -179,7 +179,7 @@ export default function App() {
       {/* Show loading screen until everything is loaded */}
       {!isLoaded && <LoadingScreen progress={loadingProgress} />}
 
-      <button
+      {/* <button
         onClick={toggleDayNight}
         style={{
           position: "absolute",
@@ -208,7 +208,7 @@ export default function App() {
         }}
       >
         {isDay ? "🌙 " : "☀️"}
-      </button>
+      </button> */}
 
       <Canvas
         shadows
