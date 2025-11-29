@@ -3,12 +3,23 @@ import { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 
-export function CharacterModel({ playerRef, animationState }) {
+export function CharacterModel({ playerRef, animationState, onLoad }) {
   const { scene, animations } = useGLTF("/Character.glb");
   console.log(scene, animations);
   const mixerRef = useRef();
   const actionsRef = useRef({});
   const currentActionRef = useRef();
+
+  // Call onLoad when model and animations are ready
+  useEffect(() => {
+    if (scene && animations.length > 0 && onLoad) {
+      // Small delay to ensure everything is fully loaded and rendered
+      const timer = setTimeout(() => {
+        onLoad();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [scene, animations, onLoad]);
 
   useEffect(() => {
     if (!scene || !animations.length) return;
@@ -44,7 +55,7 @@ export function CharacterModel({ playerRef, animationState }) {
       targetAction.reset().fadeIn(0.2).play();
       currentActionRef.current = targetAction;
     }
-  }, [animationState]);
+  }, [animationState, animations]);
 
   useFrame((state, delta) => {
     if (playerRef.current && scene) {
@@ -66,3 +77,6 @@ export function CharacterModel({ playerRef, animationState }) {
     />
   );
 }
+
+// Preload the model for better performance
+useGLTF.preload("/Character.glb");

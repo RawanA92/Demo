@@ -16,7 +16,7 @@ export default function JoystickThirdPersonCamera({
     if (!playerRef.current) return;
 
     // Update camera rotation based on look input (fixed x-axis direction)
-    const lookSensitivity = 2.5;
+    const lookSensitivity = 1.5;
     targetYawRef.current -= lookInput.x * lookSensitivity * delta; // Changed += to -=
     targetPitchRef.current -= lookInput.y * lookSensitivity * delta;
 

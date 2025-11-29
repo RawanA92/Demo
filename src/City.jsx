@@ -168,55 +168,64 @@ export default function City(props) {
         rotation={[0, Math.PI / 6, 0]}
         position={[-39.1, 38.4, -38]}
         args={[43.4, 13.5]}
-        advertisementImage={"Advertise1.jpg"}
+        advertisementImage={"STC.png"}
+        url={"https://www.stc.com.sa/"}
       />
       <AdvertisingPlane
         rotation={[0, 0, 0]}
         position={[102.7, 148.4, -36.1]}
         args={[35, 173.5]}
-        advertisementImage={"Advertise2.jpg"}
+        advertisementImage={"logo1.png"}
+        url={"https://www.aramco.com/"}
       />
       <AdvertisingPlane
         rotation={[0, Math.PI / 2, 0]}
         position={[126.2, 148.4, -60]}
         args={[35, 173.5]}
-        advertisementImage={"Advertise3.jpg"}
+        advertisementImage={"logo1.png"}
+        url={"https://www.aramco.com/"}
       />
       <AdvertisingPlane
         rotation={[0, Math.PI, 0]}
         position={[102.2, 148.4, -83.9]}
         args={[35, 173.5]}
-        advertisementImage={"Advertise1.jpg"}
+        advertisementImage={"logo1.png"}
+        url={"https://www.aramco.com/"}
       />
       <AdvertisingPlane
         rotation={[0, -Math.PI / 2, 0]}
         position={[78.5, 148.4, -59.9]}
         args={[35, 173.5]}
-        advertisementImage={"Advertise2.jpg"}
+        advertisementImage={"logo1.png"}
+        url={"https://www.aramco.com/"}
       />
       <AdvertisingPlane
         rotation={[-Math.PI / 90, Math.PI / 4, 0]}
         position={[11.5, 55, -252.5]}
         args={[25, 60.5]}
-        advertisementImage={"Advertise2.jpg"}
-      />{" "}
+        advertisementImage={"STC.png"}
+        url={"https://www.stc.com.sa/"}
+      />
       <AdvertisingPlane
         rotation={[0, Math.PI / 2, 0]}
         position={[-27, 55, 105]}
         args={[35, 60.5]}
-        advertisementImage={'Advertise1.jpg'}
+        advertisementImage={"STC.png"}
+        url={"https://www.stc.com.sa/"}
       />
       <AdvertisingPlane
         rotation={[-Math.PI / 90, -Math.PI / 4, 0]}
         position={[-11.5, 55, -252.5]}
         args={[25, 60.5]}
-        advertisementImage={"Advertise2.jpg"}
+        advertisementImage={"STC.png"}
+        url={"https://www.stc.com.sa/"}
       />{" "}
       <AdvertisingPlane
         rotation={[0, Math.PI / 2, 0]}
         position={[-27, 55, 105]}
         args={[35, 60.5]}
-        advertisementImage={'Advertise2.jpg'}
+        advertisementImage={"logo1.png"}
+        url={"https://www.aramco.com/"}
       />
     </group>
   );

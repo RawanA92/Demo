@@ -10,13 +10,13 @@ function ease(t) {
 
 const center = new THREE.Vector3(0, 0, 2);
 const pathCorners = [
-  new THREE.Vector3(0, 2.1, 144),   // South
-  new THREE.Vector3(145, 2.1, 145), // Eastern South
-  new THREE.Vector3(145, 2.1, -145),// Eastern North
-  new THREE.Vector3(-145, 2.1, -145),// Western North
-  new THREE.Vector3(-145, 2.1, 145), // Western South
-  new THREE.Vector3(0, 2.1, 145),   // South again
-  new THREE.Vector3(0, 2.1, -145),  // North
+  new THREE.Vector3(0, 2.1, 164),   // South
+  new THREE.Vector3(165, 2.1, 165), // Eastern South
+  new THREE.Vector3(165, 2.1, -155),// Eastern North
+  new THREE.Vector3(-165, 2.1, -155),// Western North
+  new THREE.Vector3(-165, 2.1, 165), // Western South
+  new THREE.Vector3(0, 2.1, 165),   // South again
+  new THREE.Vector3(0, 2.1, -165),  // North
   new THREE.Vector3(0, 180, 0),     // Final point (upwards)
 ];
 
@@ -24,7 +24,7 @@ export default function SquareDroneCamera() {
   const camRef = useRef();
   const segment = useRef(0);
   const progress = useRef(0);
-  const speed = 0.10;
+  const speed = 0.05;
 
   const [flag, setFlag] = useState(false);
   const [waiting, setWaiting] = useState(false);
@@ -88,7 +88,7 @@ export default function SquareDroneCamera() {
       Math.abs(camRef.current.position.x) < 0.5
     ) {
       setFlag(true);
-      desiredLook.current.set(0, 3.1, -150);
+      desiredLook.current.set(0, 2.1, -150);
     }
 
     // Smoothly rotate toward desiredLook

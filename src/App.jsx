@@ -1,19 +1,134 @@
 import { Canvas } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
+import { Environment, useProgress } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import City from "./City";
 import { useDeviceType } from "./Utils/DeviceType";
-import { useState, useRef, useMemo, memo } from "react";
+import { useState, useRef, useMemo, memo, Suspense, useEffect } from "react";
 
 import { JoystickGUI } from "./Utils/Joystick/JoystickGUI";
 import JoystickSetup from "./Utils/Joystick/JoystickSetup";
 import CharacterSetup from "./Utils/Setup";
+
+const LoadingScreen = memo(({ progress }) => (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      background:
+        "linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%)",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999,
+      fontFamily: "system-ui, sans-serif",
+    }}
+  >
+    <div
+      style={{
+        fontSize: "48px",
+        fontWeight: "bold",
+        background: "linear-gradient(135deg, #00ff88, #00ccff, #00ff88)",
+        backgroundSize: "200% 200%",
+        backgroundClip: "text",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        animation: "gradient 3s ease infinite",
+        marginBottom: "40px",
+        textAlign: "center",
+      }}
+    >
+      🏙️ Tuwaiq City
+    </div>
+
+    <div
+      style={{
+        width: "300px",
+        height: "6px",
+        background: "rgba(255, 255, 255, 0.1)",
+        borderRadius: "10px",
+        overflow: "hidden",
+        position: "relative",
+        boxShadow: "0 0 20px rgba(0, 255, 136, 0.3)",
+      }}
+    >
+      <div
+        style={{
+          width: `${Math.min(progress, 100)}%`,
+          height: "100%",
+          background: "linear-gradient(90deg, #00ff88, #00ccff)",
+          borderRadius: "10px",
+          transition: "width 0.3s ease",
+          boxShadow: "0 0 10px rgba(0, 255, 136, 0.8)",
+        }}
+      />
+    </div>
+
+    <div
+      style={{
+        marginTop: "20px",
+        fontSize: "18px",
+        color: "#00ff88",
+        fontWeight: "500",
+      }}
+    >
+      {Math.floor(progress)}%
+    </div>
+
+    <div
+      style={{
+        marginTop: "10px",
+        fontSize: "14px",
+        color: "rgba(255, 255, 255, 0.6)",
+        fontStyle: "italic",
+      }}
+    >
+      Loading assets...
+    </div>
+
+    <style>
+      {`
+        @keyframes gradient {
+          0% { background-position: 0% 50%; scale: 1; }
+          50% { background-position: 100% 50%; scale: 1.05; }
+          100% { background-position: 0% 50%; scale: 1;}
+        }
+      `}
+    </style>
+  </div>
+));
+
+// This component must be OUTSIDE Canvas to track progress properly
+function LoadingManager({ onProgressChange, onLoadComplete }) {
+  const { active, progress } = useProgress();
+  
+  useEffect(() => {
+    // Update progress in real-time
+    onProgressChange(Math.min(progress, 100));
+    
+    // When loading completes
+    if (!active && progress === 100) {
+      // Small delay to ensure everything is rendered
+      const timer = setTimeout(() => {
+        onLoadComplete();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [active, progress, onProgressChange, onLoadComplete]);
+
+  return null;
+}
 
 export default function App() {
   const [isDay, setIsDay] = useState(true);
   const [selectedPosition, setSelectedPosition] = useState([0, 0, 0]);
   const [clickedObject, setClickedObject] = useState(null);
   const [animationState, setAnimationState] = useState("Idle");
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   const [scaleR, setScaleR] = useState(25);
   const [mode, setMode] = useState("Cinematic View");
@@ -30,19 +145,22 @@ export default function App() {
     setIsDay(!isDay);
   };
 
-  const handleClick = useMemo(() => (event) => {
-    event.stopPropagation();
-    const point = event.point;
-    setSelectedPosition([point.x, point.y, point.z]);
+  const handleClick = useMemo(
+    () => (event) => {
+      event.stopPropagation();
+      const point = event.point;
+      setSelectedPosition([point.x, point.y, point.z]);
 
-    if (event.object && event.object.parent) {
-      const objectName =
-        event.object.parent.name || event.object.name || "unknown object";
-      setClickedObject(objectName);
-    } else {
-      setClickedObject("Floor or surface");
-    }
-  }, []);
+      if (event.object && event.object.parent) {
+        const objectName =
+          event.object.parent.name || event.object.name || "unknown object";
+        setClickedObject(objectName);
+      } else {
+        setClickedObject("Floor or surface");
+      }
+    },
+    []
+  );
 
   return (
     <div
@@ -52,6 +170,15 @@ export default function App() {
         background: isDay ? "#87CEEB" : "#0a0a1a",
       }}
     >
+      {/* Loading Manager tracks progress from OUTSIDE Canvas */}
+      <LoadingManager 
+        onProgressChange={setLoadingProgress}
+        onLoadComplete={() => setIsLoaded(true)}
+      />
+      
+      {/* Show loading screen until everything is loaded */}
+      {!isLoaded && <LoadingScreen progress={loadingProgress} />}
+
       <button
         onClick={toggleDayNight}
         style={{
@@ -83,14 +210,6 @@ export default function App() {
         {isDay ? "🌙 " : "☀️"}
       </button>
 
-      {/* {showCoordinates && (
-        <CoordinatesDisplay
-          selectedPosition={selectedPosition}
-          clickedObject={clickedObject}
-          isDay={isDay}
-        />
-      )} */}
-
       <Canvas
         shadows
         camera={{ near: 0.1, far: 1000, position: [20, 15, 20], fov: 45 }}
@@ -103,41 +222,47 @@ export default function App() {
         dpr={[1, 1.5]}
         onClick={handleClick}
       >
-        {isDay ? (
-          <DayLighting />
-        ) : (
-          <NightLighting selectedPosition={selectedPosition} />
-        )}
+        {/* Suspense handles the loading state */}
+        <Suspense fallback={null}>
+          {isDay ? (
+            <DayLighting />
+          ) : (
+            <NightLighting selectedPosition={selectedPosition} />
+          )}
 
-        <Physics>
-          <City
-            position={[4, -12.8, 0]}
-            scale={[1, 1, 1]}
-            onObjectClick={(position, objectName) => {
-              setSelectedPosition(position);
-              setClickedObject(objectName);
-            }}
+          <Physics>
+            <City
+              position={[4, -12.8, 0]}
+              scale={[1, 1, 1]}
+              onObjectClick={(position, objectName) => {
+                setSelectedPosition(position);
+                setClickedObject(objectName);
+              }}
+            />
+          </Physics>
+          
+          <mesh ref={playerRef} position={[0, 0, 0]} visible={false}>
+            <boxGeometry args={[1, 2, 1]} />
+          </mesh>
+          
+          <CharacterSetup
+            playerRef={playerRef}
+            moveInput={moveInput}
+            lookInput={lookInput}
+            yaw={yaw}
+            pitch={pitch}
+            animationState={animationState}
+            setAnimationState={setAnimationState}
+            scaleR={scaleR}
+            mode={mode}
           />
-        </Physics>
-        <mesh ref={playerRef} position={[0, 0, 0]} visible={false}>
-          <boxGeometry args={[1, 2, 1]} />
-        </mesh>
-        <CharacterSetup
-          playerRef={playerRef}
-          moveInput={moveInput}
-          lookInput={lookInput}
-          yaw={yaw}
-          pitch={pitch}
-          animationState={animationState}
-          setAnimationState={setAnimationState}
-          scaleR={scaleR}
-          mode={mode}
-        />
+        </Suspense>
       </Canvas>
+      
       {useDeviceType() === "touch" && (
         <JoystickGUI onMoveChange={setMoveInput} onLookChange={setLookInput} />
       )}
-      
+
       <CustomControls
         scaleR={scaleR}
         mode={mode}
@@ -177,11 +302,7 @@ const DayLighting = memo(() => (
 
     <ambientLight intensity={1} color="#FFF8E1" />
 
-    <hemisphereLight
-      skyColor="#87CEEB"
-      groundColor="#F0E68C"
-      intensity={1.2}
-    />
+    <hemisphereLight skyColor="#87CEEB" groundColor="#F0E68C" intensity={1.2} />
 
     <directionalLight
       position={[-30, 100, -30]}
@@ -197,50 +318,85 @@ const NightLighting = memo(({ selectedPosition }) => {
   const streetLightGroups = useMemo(() => {
     // Group 1: Main street lights (consolidated with larger coverage)
     const mainStreetPositions = [
-      [-70.65, -1.52, -21.67], [-97.94, -1.52, -21.65],
-      [-99.01, -1.52, 21.23], [-71.73, -1.52, 21.24],
-      [55.13, -1.52, -21.89], [54.06, -1.52, 21.32],
-      [82.42, -1.52, -21.61], [81.34, -1.52, 21.35],
-      [109.71, -1.52, -21.58], [108.65, -1.52, 21.38],
-      [-44.13, -1.52, 18.5], [-43.36, -1.52, -21.89],
+      [-70.65, -1.52, -21.67],
+      [-97.94, -1.52, -21.65],
+      [-99.01, -1.52, 21.23],
+      [-71.73, -1.52, 21.24],
+      [55.13, -1.52, -21.89],
+      [54.06, -1.52, 21.32],
+      [82.42, -1.52, -21.61],
+      [81.34, -1.52, 21.35],
+      [109.71, -1.52, -21.58],
+      [108.65, -1.52, 21.38],
+      [-44.13, -1.52, 18.5],
+      [-43.36, -1.52, -21.89],
     ];
 
     // Group 2: Perimeter lights (consolidated)
     const perimeterPositions = [
-      [-18.09, -1.52, 46.2], [25.72, -1.52, 45.05],
-      [-18.12, -1.52, 101.48], [25.48, -1.52, 100.33],
-      [-70.65, -1.52, 130.6], [-97.94, -1.52, 130.57],
-      [-127.24, -1.52, 100.33], [-127.09, -1.52, 73.04],
+      [-18.09, -1.52, 46.2],
+      [25.72, -1.52, 45.05],
+      [-18.12, -1.52, 101.48],
+      [25.48, -1.52, 100.33],
+      [-70.65, -1.52, 130.6],
+      [-97.94, -1.52, 130.57],
+      [-127.24, -1.52, 100.33],
+      [-127.09, -1.52, 73.04],
       [-127.21, -1.52, 45.75],
     ];
 
     // Group 3: Back street lights (consolidated)
     const backStreetPositions = [
-      [25.51, -1.52, -107.32], [25.55, -1.52, -80.03],
-      [25.59, -1.52, -52.74], [-17.97, -1.52, -106.16],
-      [-17.9, -1.52, -51.59], [54.06, -1.52, -130.98],
-      [81.34, -1.52, -131.12], [108.65, -1.52, -131.07],
+      [25.51, -1.52, -107.32],
+      [25.55, -1.52, -80.03],
+      [25.59, -1.52, -52.74],
+      [-17.97, -1.52, -106.16],
+      [-17.9, -1.52, -51.59],
+      [54.06, -1.52, -130.98],
+      [81.34, -1.52, -131.12],
+      [108.65, -1.52, -131.07],
     ];
 
     // Group 4: East side lights (consolidated)
     const eastSidePositions = [
-      [134.38, -1.52, -106.16], [134.38, -1.52, -51.59],
-      [134.38, -1.52, 101.48], [134.38, -1.52, 74.2],
-      [134.38, -1.52, 46.91], [109.71, -1.52, 130.78],
-      [82.42, -1.52, 130.78], [54.35, -1.52, 130.78],
+      [134.38, -1.52, -106.16],
+      [134.38, -1.52, -51.59],
+      [134.38, -1.52, 101.48],
+      [134.38, -1.52, 74.2],
+      [134.38, -1.52, 46.91],
+      [109.71, -1.52, 130.78],
+      [82.42, -1.52, 130.78],
+      [54.35, -1.52, 130.78],
     ];
 
     // Group 5: West side lights (consolidated)
     const westSidePositions = [
-      [-44.42, -1.52, -131.19], [-71.73, -1.52, -131.19],
-      [-127.11, -1.52, -107.32], [-127.11, -1.52, -80.03],
+      [-44.42, -1.52, -131.19],
+      [-71.73, -1.52, -131.19],
+      [-127.11, -1.52, -107.32],
+      [-127.11, -1.52, -80.03],
       [-127.11, -1.52, -52.5],
     ];
 
     return [
-      { positions: mainStreetPositions, intensity: 6, distance: 60, decay: 0.6 },
-      { positions: perimeterPositions, intensity: 5, distance: 55, decay: 0.65 },
-      { positions: backStreetPositions, intensity: 5, distance: 55, decay: 0.65 },
+      {
+        positions: mainStreetPositions,
+        intensity: 6,
+        distance: 60,
+        decay: 0.6,
+      },
+      {
+        positions: perimeterPositions,
+        intensity: 5,
+        distance: 55,
+        decay: 0.65,
+      },
+      {
+        positions: backStreetPositions,
+        intensity: 5,
+        distance: 55,
+        decay: 0.65,
+      },
       { positions: eastSidePositions, intensity: 5, distance: 50, decay: 0.7 },
       { positions: westSidePositions, intensity: 5, distance: 50, decay: 0.7 },
     ];
@@ -274,17 +430,20 @@ const NightLighting = memo(({ selectedPosition }) => {
   }, []);
 
   // OPTIMIZED: Albaik restaurant lights (consolidated into 2 lights)
-  const albaikLights = useMemo(() => (
-    <>
-      <pointLight
-        position={[-91.78, 11.2, -21.07]}
-        intensity={8.0}
-        color="#FFFFFF"
-        distance={120}
-        decay={0.4}
-      />
-    </>
-  ), []);
+  const albaikLights = useMemo(
+    () => (
+      <>
+        <pointLight
+          position={[-91.78, 11.2, -21.07]}
+          intensity={8.0}
+          color="#FFFFFF"
+          distance={120}
+          decay={0.4}
+        />
+      </>
+    ),
+    []
+  );
 
   return (
     <>
@@ -431,7 +590,14 @@ const Cursor = memo(({ position }) => (
   </group>
 ));
 
-function CustomControls({ scaleR, mode, onScaleChange, onModeChange, showControls, onToggle }) {
+function CustomControls({
+  scaleR,
+  mode,
+  onScaleChange,
+  onModeChange,
+  showControls,
+  onToggle,
+}) {
   // Show small button when controls are hidden
   if (!showControls) {
     return (
@@ -488,7 +654,14 @@ function CustomControls({ scaleR, mode, onScaleChange, onModeChange, showControl
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
         <h3
           style={{
             margin: "0",
