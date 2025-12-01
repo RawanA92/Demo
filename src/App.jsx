@@ -239,7 +239,6 @@ export default function App() {
                 setClickedObject(objectName);
               }}
             />
-          </Physics>
           
           <mesh ref={playerRef} position={[0, 0, 0]} visible={false}>
             <boxGeometry args={[1, 2, 1]} />
@@ -255,7 +254,8 @@ export default function App() {
             setAnimationState={setAnimationState}
             scaleR={scaleR}
             mode={mode}
-          />
+            />
+            </Physics>
         </Suspense>
       </Canvas>
       

@@ -1,15 +1,16 @@
 // ============================================
-// KeyboardThirdPersonSetup.jsx - Updated with onLoad
+// KeyboardThirdPersonSetup.jsx - Updated with rigidBodyRef
 // ============================================
 import KeyboardThirdPersonMovement from "./KeyboardThirdPersonMovement";
 import KeyboardThirdPersonCamera from "./KeyboardThirdPersonCamera";
 import useMouseDrag from "../useDragMouse";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { CharacterModel } from "../../AvatarLoader/MainCharacterModel";
 
 export default function KeyboardThirdPersonSetup(props) {
   const { mouseDelta, isDragging } = useMouseDrag();
   const [characterModelLoaded, setCharacterModelLoaded] = useState(false);
+  const rigidBodyRef = useRef(); // Create the rigidBodyRef here
 
   // Call onLoad callback when character is loaded
   useEffect(() => {
@@ -24,6 +25,7 @@ export default function KeyboardThirdPersonSetup(props) {
         {props.playerRef?.current && (
           <CharacterModel
             playerRef={props.playerRef}
+            rigidBodyRef={rigidBodyRef}
             animationState={props.animationState}
             onLoad={() => setCharacterModelLoaded(true)}
           />
@@ -34,6 +36,7 @@ export default function KeyboardThirdPersonSetup(props) {
         <KeyboardThirdPersonMovement
           moveInput={props.moveInput}
           playerRef={props.playerRef}
+          rigidBodyRef={rigidBodyRef}
           cameraYaw={props.yaw}
           isRunning={props.isRunning}
           onAnimationStateChange={props.setAnimationState}

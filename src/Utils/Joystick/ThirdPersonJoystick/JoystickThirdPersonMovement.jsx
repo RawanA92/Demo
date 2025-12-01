@@ -1,74 +1,87 @@
+// KeyboardThirdPersonMovement.jsx (UPDATED - Better movement physics)
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { useRef } from "react";
 
-export default function JoystickThirdPersonMovement({
+export default function KeyboardThirdPersonMovement({
   moveInput,
   playerRef,
+  rigidBodyRef,
   cameraYaw,
   onAnimationStateChange,
+  isRunning,
 }) {
-  const currentAnimState = useRef("idle");
-
   useFrame((state, delta) => {
-    if (!playerRef.current || !moveInput) return;
+    if (!rigidBodyRef.current || !moveInput) return;
 
-    // Clamp delta to prevent large jumps during frame drops
-    const clampedDelta = Math.min(delta, 0.1);
+    const rb = rigidBodyRef.current;
 
     const intensity = Math.sqrt(
       moveInput.x * moveInput.x + moveInput.y * moveInput.y
     );
 
-    // Determine speed and animation based on intensity
     let moveSpeed = 0;
-    let animState = "idle"; // Default to idle
-
-    if (intensity > 0.8) {
-      moveSpeed = 14;
-      animState = "run";
-    } else if (intensity > 0.1) {
-      moveSpeed = 8;
-      animState = "walk";
-    }
-
-    // Only update animation state if it changed (reduces unnecessary updates)
-    if (currentAnimState.current !== animState) {
-      currentAnimState.current = animState;
-      onAnimationStateChange(animState);
-    }
+    let animState = "idle";
 
     if (intensity > 0.1) {
-      // Calculate movement direction relative to camera (inverted forward/backward)
-      const angle = Math.atan2(moveInput.x, -moveInput.y); // Negated moveInput.y
-      const moveAngle = cameraYaw.current + angle;
-
-      // Move character with clamped delta
-      const moveVector = new THREE.Vector3(
-        -Math.sin(moveAngle) * moveSpeed * clampedDelta,
-        0,
-        -Math.cos(moveAngle) * moveSpeed * clampedDelta
-      );
-
-      playerRef.current.position.add(moveVector);
-
-      // Rotate character to face movement direction with proper angle wrapping
-      const targetRotation = moveAngle + Math.PI;
-      const currentRotation = playerRef.current.rotation.y;
-      
-      // Calculate shortest rotation path
-      let rotationDiff = targetRotation - currentRotation;
-      
-      // Wrap the difference to [-π, π] range
-      while (rotationDiff > Math.PI) rotationDiff -= 2 * Math.PI;
-      while (rotationDiff < -Math.PI) rotationDiff += 2 * Math.PI;
-      
-      // Apply smoothed rotation
-      playerRef.current.rotation.y = currentRotation + rotationDiff * 0.15;
+      if (isRunning) {
+        moveSpeed = 8; // Reduced for better collision response
+        animState = "run";
+      } else {
+        moveSpeed = 5; // Reduced for better collision response
+        animState = "walk";
+      }
     }
 
-    // Keep character grounded INSIDE useFrame
-    playerRef.current.position.y = -14;
+    onAnimationStateChange(animState);
+
+    const currentVel = rb.linvel();
+
+    if (intensity > 0.1) {
+      const angle = Math.atan2(moveInput.x, -moveInput.y);
+      const moveAngle = cameraYaw.current + angle;
+
+      // FIXED: Only set horizontal velocity, preserve Y for gravity
+      const velocityX = -Math.sin(moveAngle) * moveSpeed;
+      const velocityZ = -Math.cos(moveAngle) * moveSpeed;
+
+      // Keep vertical velocity for gravity and jumping
+      rb.setLinvel({ 
+        x: velocityX, 
+        y: currentVel.y, // IMPORTANT: Don't override Y velocity
+        z: velocityZ 
+      }, true);
+
+      // Smooth rotation towards movement direction
+      const targetRotation = new THREE.Quaternion();
+      targetRotation.setFromAxisAngle(
+        new THREE.Vector3(0, 1, 0),
+        moveAngle + Math.PI
+      );
+      
+      const currentRot = rb.rotation();
+      const currentQuat = new THREE.Quaternion(
+        currentRot.x, 
+        currentRot.y, 
+        currentRot.z, 
+        currentRot.w
+      );
+      
+      // Smooth interpolation
+      currentQuat.slerp(targetRotation, 10 * delta);
+      rb.setRotation(currentQuat, true);
+    } else {
+      // Stop horizontal movement but keep gravity
+      rb.setLinvel({ x: 0, y: currentVel.y, z: 0 }, true);
+    }
+
+    // Sync playerRef with RigidBody position
+    if (playerRef.current) {
+      const pos = rb.translation();
+      playerRef.current.position.set(pos.x, pos.y, pos.z);
+      
+      const rot = rb.rotation();
+      playerRef.current.quaternion.set(rot.x, rot.y, rot.z, rot.w);
+    }
   });
 
   return null;

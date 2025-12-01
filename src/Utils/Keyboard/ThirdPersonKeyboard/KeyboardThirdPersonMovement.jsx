@@ -1,5 +1,5 @@
 // ============================================
-// KeyboardThirdPersonMovement.jsx - Fixed
+// KeyboardThirdPersonMovement.jsx - Physics Version
 // ============================================
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -7,12 +7,13 @@ import * as THREE from "three";
 export default function KeyboardThirdPersonMovement({
   moveInput,
   playerRef,
+  rigidBodyRef,
   cameraYaw,
   onAnimationStateChange,
   isRunning,
 }) {
   useFrame((state, delta) => {
-    if (!playerRef.current || !moveInput) return;
+    if (!playerRef.current || !rigidBodyRef?.current || !moveInput) return;
 
     // Calculate actual movement intensity
     const intensity = Math.sqrt(
@@ -42,20 +43,26 @@ export default function KeyboardThirdPersonMovement({
       const angle = Math.atan2(moveInput.x, -moveInput.y);
       const moveAngle = cameraYaw.current + angle;
 
-      // Move character
-      const moveVector = new THREE.Vector3(
-        -Math.sin(moveAngle) * moveSpeed * delta,
-        0,
-        -Math.cos(moveAngle) * moveSpeed * delta
-      );
+      // Apply velocity to physics body (instead of direct position change)
+      rigidBodyRef.current.setLinvel({
+        x: -Math.sin(moveAngle) * moveSpeed,
+        y: rigidBodyRef.current.linvel().y, // Preserve vertical velocity (gravity)
+        z: -Math.cos(moveAngle) * moveSpeed,
+      });
 
-      playerRef.current.position.add(moveVector);
-
-      // Rotate character to face movement direction
-      playerRef.current.rotation.y = moveAngle + Math.PI;
+      // Rotate character to face movement direction using quaternion
+      const quaternion = new THREE.Quaternion();
+      quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), moveAngle + Math.PI);
+      rigidBodyRef.current.setRotation(quaternion, true);
+    } else {
+      // Stop movement when no input
+      rigidBodyRef.current.setLinvel({
+        x: 0,
+        y: rigidBodyRef.current.linvel().y, // Keep gravity
+        z: 0,
+      });
     }
   });
-  
-  playerRef.current.position.y = -14;
+
   return null;
 }

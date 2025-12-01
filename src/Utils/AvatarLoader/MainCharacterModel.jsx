@@ -2,8 +2,9 @@ import { useGLTF } from "@react-three/drei";
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
+import { RigidBody, CapsuleCollider } from "@react-three/rapier";
 
-export function CharacterModel({ playerRef, animationState, onLoad }) {
+export function CharacterModel({ playerRef, rigidBodyRef, animationState, onLoad }) {
   const { scene, animations } = useGLTF("/Character.glb");
   console.log(scene, animations);
   const mixerRef = useRef();
@@ -58,23 +59,41 @@ export function CharacterModel({ playerRef, animationState, onLoad }) {
   }, [animationState, animations]);
 
   useFrame((state, delta) => {
-    if (playerRef.current && scene) {
-      scene.position.copy(playerRef.current.position);
-      scene.rotation.copy(playerRef.current.rotation);
+    // Sync playerRef with physics body position/rotation
+    if (rigidBodyRef.current && playerRef.current) {
+      const physicsPos = rigidBodyRef.current.translation();
+      playerRef.current.position.set(physicsPos.x, physicsPos.y, physicsPos.z);
+      
+      const physicsRot = rigidBodyRef.current.rotation();
+      playerRef.current.rotation.y = new THREE.Euler().setFromQuaternion(
+        new THREE.Quaternion(physicsRot.x, physicsRot.y, physicsRot.z, physicsRot.w)
+      ).y;
     }
 
+    // Update animations
     if (mixerRef.current) {
       mixerRef.current.update(delta);
     }
   });
 
   return (
-    <primitive
-      object={scene}
-      scale={3}
-      castShadow
-      receiveShadow
-    />
+    <RigidBody
+      ref={rigidBodyRef} // This will be passed from parent
+      type="dynamic"
+      colliders={false}
+      position={[0, -13, 0]}
+      lockRotations
+      canSleep={false}
+    >
+      <CapsuleCollider args={[1.4, 1.7]} position={[0, 2, 0]} />
+      <primitive
+        object={scene}
+        scale={3}
+        position={[0, -1, 0]}
+        castShadow
+        receiveShadow
+      />
+    </RigidBody>
   );
 }
 
